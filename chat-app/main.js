@@ -1,6 +1,9 @@
 import Expo from 'expo';
 import React from 'react';
 import Axios from 'axios';
+
+var io = require('socket.io');
+
 import {
   StyleSheet,
   Text,
@@ -10,10 +13,28 @@ import {
 
 class App extends React.Component {
 
+  constructor(props, context){
+    super(props, context);
+    this.state = {
+      messages = [
+        'message 1',
+      ]
+    }
+  }
+
+  componentDidMount() {
+    this.socket = io('https://stormy-beyond-28017.herokuapp.com/');
+    this.socket.on('chat-message', (msg) => {
+      console.log(msg);
+      var messages = this.state.messages;
+      messages.push(msg);
+      this.updateState(messages);
+    })
+  }
+
   pingServer() {
     console.log('pressed');
-
-    Axios.get('http://example.com/')
+    Axios.get('https://stormy-beyond-28017.herokuapp.com/')
       .then(res => {
         console.log(res)
       })
