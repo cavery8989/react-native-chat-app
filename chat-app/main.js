@@ -2,7 +2,7 @@ import Expo from 'expo';
 import React from 'react';
 import Axios from 'axios';
 
-var io = require('socket.io');
+var io = require('socket.io-client');
 
 import {
   StyleSheet,
@@ -16,7 +16,7 @@ class App extends React.Component {
   constructor(props, context){
     super(props, context);
     this.state = {
-      messages = [
+      messages: [
         'message 1',
       ]
     }
@@ -28,28 +28,34 @@ class App extends React.Component {
       console.log(msg);
       var messages = this.state.messages;
       messages.push(msg);
-      this.updateState(messages);
+      this.setState(messages);
     })
   }
 
-  pingServer() {
-    console.log('pressed');
-    Axios.get('https://stormy-beyond-28017.herokuapp.com/')
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.log(err);
-      })
+  sendMessage() {
+    this.socket.emit('chat-message', 'sent from phone')
+  }
+
+  renderMessages() {
+    const messages = this.state.messages;
+
+    const nodes = messages.map((message, index) => {
+      return (
+        <Text key={index}>{message}</Text>
+      )
+    })
+
+    return nodes;
   }
 
   render() {
     return (
       <View style={styles.container}>
         <Text>Open up main.js to start working!</Text>
+        {this.renderMessages()}
         <TouchableHighlight
           style={styles.button}
-          onPress={this.pingServer.bind(this)}
+          onPress={this.sendMessage.bind(this)}
         >
           <Text>Press me</Text>
         </TouchableHighlight>
